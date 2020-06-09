@@ -59,7 +59,7 @@ public:
 		for (int move : getValidMoves(b)) {
 			Board b2 (b);
 			b2.setPiece(move, myPiece);
-			score = minimax(b2, 5, false);
+			score = minimax(b2, 10, false);
 
 			if (score > bestScore) {
 				bestScore = score;
@@ -68,6 +68,8 @@ public:
 		}
 		return bestMove;
 	}
+
+	Piece getPiece() { return myPiece; }
 
 private:
 	Piece myPiece, opponent_piece;

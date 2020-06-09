@@ -6,6 +6,22 @@ using namespace std;
 enum Piece { E = 0, X = 1, O = 2, I = -1, Invalid = I, Empty = E };
 
 class Board {
+public:
+	// default constructor
+	Board() {
+		boardArr = { {E, E, E, E, E, E, E, E, E} };
+		x_turn = true;
+		gameOver = false;
+		winner = I;
+	}
+ 
+	// copy constructor
+	Board(const Board& b2) {
+		boardArr = b2.boardArr;
+		x_turn = b2.x_turn;
+		gameOver = b2.gameOver;
+		winner = b2.winner;
+	}
 private:
 	array<Piece, 9> boardArr;
 	bool x_turn;
@@ -57,22 +73,6 @@ private:
 	}
 
 public:
-	// default constructor
-	Board() {
-		boardArr = { {E, E, E, E, E, E, E, E, E} };
-		x_turn = true;
-		gameOver = false;
-		winner = I;
-	}
- 
-	// copy constructor
-	Board(const Board& b2) {
-		boardArr = b2.boardArr;
-		x_turn = b2.x_turn;
-		gameOver = b2.gameOver;
-		winner = b2.winner;
-	}
-
 	bool setPiece(int n, Piece p) {
 		if (!outOfBounds(n) && getPiece(n) == Empty) {
 			if ((p == X) || (p == O)) {
@@ -125,7 +125,7 @@ public:
 
 	bool isValidMove(int x, int y) const { return getPiece(x, y) == E; }
 
-	bool isValidMove(int n) const { return getPiece(n); }
+	bool isValidMove(int n) const { return getPiece(n) == E; }
 
 	char printPiece(int x, int y) const {
 		Piece p = getPiece(x, y);
