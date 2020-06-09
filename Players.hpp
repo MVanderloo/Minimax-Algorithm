@@ -56,7 +56,7 @@ public:
 		int bestMove = -1;
 		int score, bestScore = INT_MIN;
 
-		for (int move : getValidMoves(b)) {
+		for (int move : getUniqueMoves(b)) {
 			Board b2 (b);
 			b2.setPiece(move, myPiece);
 			score = minimax(b2, 10, false);
@@ -91,7 +91,7 @@ private:
 
 		if (maximizing) {
 			eval = INT_MIN;
-			for (int move : getValidMoves(b)) {
+			for (int move : getUniqueMoves(b)) {
 				Board b2 (b);
 				b2.setPiece(move, myPiece);
 				curEval = minimax(b2, depth - 1, false);

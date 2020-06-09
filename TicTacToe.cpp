@@ -10,7 +10,7 @@ public:
 	bool aiTurn;
 
 	TicTacToe(bool AI_is_X) 
-	 : aiTurn(AI_is_X), ai(AI_is_X ? X : O), human(AI_is_X ? O : X) {}
+	 : aiTurn(AI_is_X), computer(AI_is_X ? X : O), human(AI_is_X ? O : X) {}
 
 	bool isGameOver() { return b.isGameOver(); }
 
@@ -19,9 +19,9 @@ public:
 	void getNextMove() {
 		int move;
 		if (aiTurn) {
-			move = ai.getMove(b);
+			move = computer.getMove(b);
 			if (b.isValidMove(move)) {
-				b.setPiece(move, ai.getPiece());
+				b.setPiece(move, computer.getPiece());
 				aiTurn = false;
 			} else {
 				cout << "Error: AI made Invalid Move" << endl;
@@ -38,8 +38,14 @@ public:
 		}
 	}
 
+	Piece getWinner() { return b.getWinner(); }
+
+	Piece getAIPiece() { return computer.getPiece(); }
+
+	Piece getConsolePiece() { return human.getPiece(); }
+
 private:
-	AIPlayer ai;
+	AIPlayer computer;
 	ConsolePlayer human;
 	Board b;
 };
@@ -67,4 +73,9 @@ int main() {
 
 	cout << "Game Over!" << endl;
 
+	if (game.getWinner() == game.getAIPiece()) cout << "You Lost!" << endl;
+	else if (game.getWinner() == game.getConsolePiece()) cout << "You Won!" << endl;
+	else cout << "It was a Tie!" << endl; 
+
+	return 0;
 }
