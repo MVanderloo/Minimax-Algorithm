@@ -1,20 +1,48 @@
-//compiled with 'g++ -std=c++17 TicTacToe.cpp'
-
 #include <iostream>
-#include <array>
 #include <vector>
-#include <climits>
 
 #include "Board.hpp"
 
 using namespace std;
 
-int nodesEvaluated = 0;
+class ConsolePlayer {
+private:
+	Piece myPiece;
+
+public:
+	ConsolePlayer(Piece p) : myPiece(p) {}
+
+	Piece getPiece() { return myPiece; }
+
+	int getMove(const Board& b) {
+		b.print();
+		cout << "Where would you like to move?" << endl; // 29 characters
+
+		vector<int> validMoves = getValidMoves(b);
+		for (int i = 0; i < (9 - validMoves.size()); i++) cout << " ";
+		for (int validMove : validMoves) {
+			cout << "  " << validMove;
+		}
+		cout << "  " << endl << endl;
+
+		int move;
+		cin >> move;
+		return move;
+	}
+
+	vector<int> getValidMoves(const Board& b) {
+		vector<int> moves;
+		for (int i = 1; i <= 9; i++) {
+			if (b.getPiece(i) == E) moves.push_back(i);
+		}
+		return moves;
+	}
+};
 
 class AIPlayer {
 public:
-	AIPlayer(Piece p) : my_piece(p) {
-		if (my_piece == X) opponent_piece = O;
+	AIPlayer(Piece p) : myPiece(p) {
+		if (myPiece == X) opponent_piece = O;
 		else opponent_piece = X;
 	}
 
@@ -32,7 +60,7 @@ public:
 
 		for (int move : getValidMoves(b)) {
 			Board b2 (b);
-			b2.setPiece(move, my_piece);
+			b2.setPiece(move, myPiece);
 			score = minimax(b2, 5, false);
 
 			if (score > bestScore) {
@@ -40,16 +68,11 @@ public:
 				bestMove = move;
 			}
 		}
-
-		nodesEvaluated = 0;
-
-		cout << "Best score: " << bestScore << endl;
-
 		return bestMove;
 	}
 
 private:
-	Piece my_piece, opponent_piece;
+	Piece myPiece, opponent_piece;
 
 	/**
 	 * the minimax algorithm is a standard algorithm for turn based games
@@ -60,8 +83,6 @@ private:
 	 * of the moves it can try (getValidMoves() or getUniqueMoves()) 
 	 */
 	int minimax(Board b, int depth, bool maximizing) {
-		//cout << "Nodes Evaluate: " << ++nodesEvaluated << endl;
-
 		if (depth == 0 || b.isGameOver()) {
 			return scoreBoard(b);
 		}
@@ -72,7 +93,7 @@ private:
 			eval = INT_MIN;
 			for (int move : getValidMoves(b)) {
 				Board b2 (b);
-				b2.setPiece(move, my_piece);
+				b2.setPiece(move, myPiece);
 				curEval = minimax(b2, depth - 1, false);
 				eval = max(eval, curEval);
 			}
@@ -87,6 +108,17 @@ private:
 			}
 			return eval;
 		}
+	}
+
+	/**
+	 * returns a vector of all positions (1-9) that are a valid move i.e. empty
+	 */
+	vector<int> getValidMoves(const Board& b) {
+		vector<int> moves;
+		for (int i = 1; i <= 9; i++) {
+			if (b.getPiece(i) == E) moves.push_back(i);
+		}
+		return moves;
 	}
 
 	/**
@@ -121,24 +153,13 @@ private:
 		return moves;
 	}
 
-	/**
-	 * returns a vector of all positions that are a valid move i.e. empty
-	 */
-	vector<int> getValidMoves(const Board& b) {
-		vector<int> moves;
-		for (int i = 1; i <= 9; i++) {
-			if (b.getPiece(i) == E) moves.push_back(i);
-		}
-		return moves;
-	}
-
 	/** 
 	 * used by the AIPLayer to get a static analysis of the board
 	 */
 	int scoreBoard(const Board& b) {
 		if (b.getWinner() == Invalid) { // means tie
 			return 0;
-		} else if (b.getWinner() == my_piece) {
+		} else if (b.getWinner() == myPiece) {
 			return 1;
 		} else {
 			return -1;
@@ -156,7 +177,14 @@ private:
 // position cursor  - \033[<L>;<C>H
 
 int main() {
+	ConsolePlayer console (X);
 	Board b;
+	for (int i = 1; i <= 9; i++) {
+		console.getMove(b);
+		b.setPiece(i, X);
+	}
+
+	/*Board b;
 	AIPlayer pc (X);
 
 	while (!b.isGameOver()) {
@@ -175,7 +203,7 @@ int main() {
 
 	cout << "Game Over!" << endl;
 
-	b.print();
+	b.print();*/
 	
 
 	return 0;

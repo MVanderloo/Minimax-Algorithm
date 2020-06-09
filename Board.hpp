@@ -12,15 +12,6 @@ private:
 	Piece winner;
 	bool gameOver;
 
-public:
-	char printPiece(int x, int y) const {
-		Piece p = getPiece(x, y);
-		if (p == X) return 'X';
-		else if (p == O) return 'O';
-		else if (p == I) return 'I';
-		else return ' ';
-	}
-
 	bool outOfBounds(int x, int y) const { return (x < 0 || x > 2 || y < 0 || y > 2); }
 
 	bool outOfBounds(int n) const { return (n < 1 || n > 9); }
@@ -135,6 +126,14 @@ public:
 	bool isValidMove(int x, int y) const { return getPiece(x, y) == E; }
 
 	bool isValidMove(int n) const { return getPiece(n); }
+
+	char printPiece(int x, int y) const {
+		Piece p = getPiece(x, y);
+		if (p == X) return 'X';
+		else if (p == O) return 'O';
+		else if (p == I) return 'I';
+		else return ' ';
+	}
 
 	void print() const {
 		// for (int i = 0; i < leftBuffer; i++) cout << " ";
