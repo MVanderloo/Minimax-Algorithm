@@ -1,8 +1,6 @@
 #include <iostream>
 #include <vector>
 
-#include "Board.hpp"
-
 using namespace std;
 
 class ConsolePlayer {
@@ -166,45 +164,3 @@ private:
 		}
 	}
 };
-
-// new line 		- \n
-// erase display 	- \033[2J
-// erase line 		- \033[K
-// cursor up 		- \033[<N>A
-// cursor down 		- \033[<N>B
-// cursor forwards 	- \033[<N>C
-// cursor backwards - \033[<N>D
-// position cursor  - \033[<L>;<C>H
-
-int main() {
-	ConsolePlayer console (X);
-	Board b;
-	for (int i = 1; i <= 9; i++) {
-		console.getMove(b);
-		b.setPiece(i, X);
-	}
-
-	/*Board b;
-	AIPlayer pc (X);
-
-	while (!b.isGameOver()) {
-		int pcMove = pc.getMove(b);
-		cout << pcMove << endl;
-		b.setPiece(pc.getMove(b), X);
-
-		if (b.isGameOver()) break;
-
-		b.print();
-		int n;
-		cin >> n;
-		b.setPiece(n, O);
-		b.print();
-	}
-
-	cout << "Game Over!" << endl;
-
-	b.print();*/
-	
-
-	return 0;
-}
