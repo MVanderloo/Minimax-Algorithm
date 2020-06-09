@@ -7,19 +7,23 @@ enum Piece { E = 0, X = 1, O = 2, I = -1, Invalid = I, Empty = E };
 
 class Board {
 private:
-	array<int, 9> boardArr;
+	array<Piece, 9> boardArr;
 	bool x_turn;
 	Piece winner;
 	bool gameOver;
 
+public:
 	char printPiece(int x, int y) const {
-		Piece ret = getPiece(x, y);
-		return (ret == E) ? ' ' : ((ret == X) ? 'X' : 'O');
+		Piece p = getPiece(x, y);
+		if (p == X) return 'X';
+		else if (p == O) return 'O';
+		else if (p == I) return 'I';
+		else return ' ';
 	}
 
-	bool outOfBounds(int x, int y) const { 
-		return !(x >= 0 && x <= 2 && y >= 0 && y <= 2); 
-	}
+	bool outOfBounds(int x, int y) const { return (x < 0 || x > 2 || y < 0 || y > 2); }
+
+	bool outOfBounds(int n) const { return (n < 1 || n > 9); }
 
 	bool find3Consecutive() {
 		for (int row = 0; row < 3; row++) {
@@ -78,7 +82,16 @@ public:
 		winner = b2.winner;
 	}
 
-	// high level setter for board pieces
+	bool setPiece(int n, Piece p) {
+		if (!outOfBounds(n) && getPiece(n) == Empty) {
+			if ((p == X) || (p == O)) {
+				boardArr[n - 1] = p;
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool setPiece(int x, int y, Piece p) {
 		if (!outOfBounds(x, y) && getPiece(x, y) == Empty) {
 			if ((p == X) || (p == O)) {
@@ -89,23 +102,22 @@ public:
 		return false;
 	}
 
-	bool setPiece(int n, Piece p) { return setPiece((n - 1) % 3, (n - 1) / 3, p); }
-
-	// high level getter for board pieces
-	Piece getPiece(int x, int y) const {
-		if (outOfBounds(x, y)) return Invalid;
-		else return static_cast<Piece>(boardArr[x + (3 * y)]);
+	Piece getPiece(int n) const {
+		if (outOfBounds(n)) return Invalid;
+		else return boardArr[n - 1];
 	}
 
-	Piece getPiece(int n) const { return getPiece((n - 1) % 3, (n - 1) / 3); }
+	Piece getPiece(int x, int y) const {
+		if (outOfBounds(x, y)) return Invalid;
+		else return boardArr[x + (3 * y)];
+	}
 
 	bool isGameOver() { 
-		if (gameOver || find3Consecutive()) return true;
-		else {
-			for (int col = 0; col < 3; col++) {
-				for (int row = 0; row < 3; row++) {
-					if (getPiece(col, row) == E) return false;
-				}
+		if (gameOver || find3Consecutive()) {
+			return true;
+		} else {
+			for (int n = 1; n <= 9; n++) {
+				if (getPiece(n) == E) return false;
 			}
 			return true;
 		}
@@ -122,7 +134,7 @@ public:
 
 	bool isValidMove(int x, int y) const { return getPiece(x, y) == E; }
 
-	bool isValidMove(int n) const { return isValidMove((n - 1) % 3, (n - 1) / 3); }
+	bool isValidMove(int n) const { return getPiece(n); }
 
 	void print() const {
 		// for (int i = 0; i < leftBuffer; i++) cout << " ";

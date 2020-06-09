@@ -6,36 +6,44 @@
 #include <climits>
 
 #include "Board.hpp"
-#include "Timer.hpp"
 
 using namespace std;
 
+int nodesEvaluated = 0;
+
 class AIPlayer {
-/*
-	The Game object will initialize an instance of the AIPlayer,
-	giving it which piece it will play as. The Game will ask for 
-	the move, which is to be returned as a Move struct. 
-*/
 public:
 	AIPlayer(Piece p) : my_piece(p) {
 		if (my_piece == X) opponent_piece = O;
 		else opponent_piece = X;
 	}
 
+	/**
+	 * given a board, this method scores a set of moves using the minimax algorithm 
+	 * 
+	 * it iterates through a container of the possible moves,
+	 * creating a copy of the board for each and scoring it using the minimax algorithm
+	 * 
+	 * returns the highest scoring move 
+	 */
 	int getMove(const Board& b) {
-		int move, bestMove = -1; // if there are no valid moves, -1 is returned
-		int score, maxScore = INT_MIN;
+		int bestMove = -1;
+		int score, bestScore = INT_MIN;
+
 		for (int move : getValidMoves(b)) {
 			Board b2 (b);
 			b2.setPiece(move, my_piece);
-			b2.print();
-			score = minimax(b2, 10, false);
-			cout << score << endl;
-			if (score > maxScore) {
-				maxScore = score;
+			score = minimax(b2, 5, false);
+
+			if (score > bestScore) {
+				bestScore = score;
 				bestMove = move;
 			}
 		}
+
+		nodesEvaluated = 0;
+
+		cout << "Best score: " << bestScore << endl;
 
 		return bestMove;
 	}
@@ -43,36 +51,54 @@ public:
 private:
 	Piece my_piece, opponent_piece;
 
+	/**
+	 * the minimax algorithm is a standard algorithm for turn based games
+	 * that uses a search tree to look ahead and determine the best move
+	 * 
+	 * it is abstracted by using a method scoreBoard() that returns a 
+	 * static analysis of the board and a method that returns a container
+	 * of the moves it can try (getValidMoves() or getUniqueMoves()) 
+	 */
 	int minimax(Board b, int depth, bool maximizing) {
+		//cout << "Nodes Evaluate: " << ++nodesEvaluated << endl;
+
 		if (depth == 0 || b.isGameOver()) {
 			return scoreBoard(b);
 		}
 
-		int eval;
+		int eval, curEval;
 
 		if (maximizing) {
-			int maxEval = INT_MIN;
+			eval = INT_MIN;
 			for (int move : getValidMoves(b)) {
-				// cout << move << endl;
 				Board b2 (b);
 				b2.setPiece(move, my_piece);
-				maxEval = minimax(b2, depth - 1, false);
-				eval = max(eval, maxEval);
+				curEval = minimax(b2, depth - 1, false);
+				eval = max(eval, curEval);
 			}
-			return maxEval;
+			return eval;
 		} else { // minimizing
-			int minEval = INT_MAX;
+			eval = INT_MAX;
 			for (int move : getValidMoves(b)) {
-				// cout << move << endl;
 				Board b2 (b);
 				b2.setPiece(move, opponent_piece);
-				minEval = minimax(b2, depth - 1, true);
-				eval = min(eval, minEval);
+				curEval = minimax(b2, depth - 1, true);
+				eval = min(eval, curEval);
 			}
-			return minEval;
+			return eval;
 		}
 	}
 
+	/**
+	 * tests a board for symmetry on the horizontal and vertical symmetry
+	 * 
+	 * This method can be used in place for the getValidMoves as it has the same param and return
+	 *
+	 * it is used to reduce score calculations on two tiles that are symmetrical
+	 * and thus would return the same score.
+	 * 
+	 * returns a vector of all the unique valid moves.
+	 */
 	vector<int> getUniqueMoves(const Board& b) {
 		bool vertSym = true, horzSym = true;
 		vector<int> moves;
@@ -95,6 +121,9 @@ private:
 		return moves;
 	}
 
+	/**
+	 * returns a vector of all positions that are a valid move i.e. empty
+	 */
 	vector<int> getValidMoves(const Board& b) {
 		vector<int> moves;
 		for (int i = 1; i <= 9; i++) {
@@ -103,8 +132,11 @@ private:
 		return moves;
 	}
 
+	/** 
+	 * used by the AIPLayer to get a static analysis of the board
+	 */
 	int scoreBoard(const Board& b) {
-		if (b.getWinner() == Invalid) {
+		if (b.getWinner() == Invalid) { // means tie
 			return 0;
 		} else if (b.getWinner() == my_piece) {
 			return 1;
@@ -126,15 +158,16 @@ private:
 int main() {
 	Board b;
 	AIPlayer pc (X);
-	int n;
 
 	while (!b.isGameOver()) {
-		cout << "AI Thinking..." << endl;
+		int pcMove = pc.getMove(b);
+		cout << pcMove << endl;
 		b.setPiece(pc.getMove(b), X);
 
 		if (b.isGameOver()) break;
 
 		b.print();
+		int n;
 		cin >> n;
 		b.setPiece(n, O);
 		b.print();
