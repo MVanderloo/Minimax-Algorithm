@@ -39,7 +39,7 @@ public:
 
 class AIPlayer {
 public:
-	AIPlayer(Piece p) : myPiece(p) {
+	AIPlayer(Piece p, int searchDepth = 10) : myPiece(p), searchDepth(searchDepth) {
 		if (myPiece == X) opponent_piece = O;
 		else opponent_piece = X;
 	}
@@ -52,14 +52,15 @@ public:
 	 * 
 	 * returns the highest scoring move 
 	 */
-	int getMove(const Board& b) {
+	int getMove(const Board& b, bool useABPruning = true) {
 		int bestMove = -1;
 		int score, bestScore = INT_MIN;
 
 		for (int move : getUniqueMoves(b)) {
 			Board b2 (b);
 			b2.setPiece(move, myPiece);
-			score = minimax(b2, 10, false);
+			
+			score = (useABPruning ? minimaxABPruning(b2, searchDepth, INT_MIN, INT_MAX, false) : minimax(b2, searchDepth, false));
 
 			if (score > bestScore) {
 				bestScore = score;
@@ -73,6 +74,7 @@ public:
 
 private:
 	Piece myPiece, opponent_piece;
+	int searchDepth;
 
 	/**
 	 * the minimax algorithm is a standard algorithm for turn based games
@@ -105,6 +107,42 @@ private:
 				b2.setPiece(move, opponent_piece);
 				curEval = minimax(b2, depth - 1, true);
 				eval = min(eval, curEval);
+			}
+			return eval;
+		}
+	}
+
+	/**
+	 * This is an implementation of the minimax algorithm utilizing alpha
+	 * beta pruning for optimization 
+	 */
+	int minimaxABPruning(Board b, int depth, int alpha, int beta, bool maximizing) {
+		if (depth == 0 || b.isGameOver()) {
+			return scoreBoard(b);
+		}
+
+		int eval, curEval;
+
+		if (maximizing) {
+			eval = INT_MIN;
+			for (int move : getUniqueMoves(b)) {
+				Board b2 (b);
+				b2.setPiece(move, myPiece);
+				curEval = minimaxABPruning(b2, depth - 1, alpha, beta, false);
+				eval = max(eval, curEval);
+				alpha = max(alpha, eval);
+				if (beta <= alpha) break;
+			}
+			return eval;
+		} else { // minimizing
+			eval = INT_MAX;
+			for (int move : getValidMoves(b)) {
+				Board b2 (b);
+				b2.setPiece(move, opponent_piece);
+				curEval = minimaxABPruning(b2, depth - 1, alpha, beta, true);
+				eval = min(eval, curEval);
+				beta = max(beta, eval);
+				if (beta <= alpha) break;
 			}
 			return eval;
 		}
