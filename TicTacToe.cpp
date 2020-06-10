@@ -52,30 +52,45 @@ private:
 
 int main() {
 	cout << "\033[2JWelcome to TicTacToe\n" << endl;
-	cout << "Would you like to be X or O? (X goes first)" << endl;
-	cout << "       [X]        [O]       " << endl;
 
-	char playerPiece;
-	cin >> playerPiece;
+	while (true) {
+		cout << "Would you like to be X or O? (X goes first)" << endl;
+		cout << "       [X]        [O]       " << endl;
 
-	while (playerPiece != 'x' && playerPiece != 'X' && playerPiece != 'o' && playerPiece != 'O') {
-		cout << "Error: Invalid Selection, Please Enter Again" << endl;
-		cin >> playerPiece; 
+		char playerPiece;
+		cin >> playerPiece;
+
+		while (playerPiece != 'x' && playerPiece != 'X' && playerPiece != 'o' && playerPiece != 'O') {
+			cout << "Error: Invalid Selection, Please Enter Again" << endl;
+			cin >> playerPiece; 
+		}
+
+		TicTacToe game ((playerPiece == 'O' || playerPiece == 'o'));
+
+		while (!game.isGameOver()) {
+			game.getNextMove();
+		}
+
+		game.printBoard();
+
+		cout << "Game Over!" << endl;
+
+		if (game.getWinner() == game.getAIPiece()) cout << "You Lost!" << endl;
+		else if (game.getWinner() == game.getConsolePiece()) cout << "You Won!" << endl;
+		else cout << "It was a Tie!\n" << endl;
+
+		cout << "Would you like to play again?" << endl;
+		cout << "        [y]       [n]        " << endl;
+
+		char playAgain;
+		cin >> playAgain;
+		while (playAgain != 'y' && playAgain != 'Y' && playAgain != 'n' && playAgain != 'N') {
+			cout << "Error: Invalid Selection, Please Enter Again" << endl;
+			cin >> playAgain; 
+		}
+
+		if (playAgain == 'n' || playAgain == 'N') break;
 	}
-
-	TicTacToe game ((playerPiece == 'O' || playerPiece == 'o'));
-
-	while (!game.isGameOver()) {
-		game.getNextMove();
-	}
-
-	game.printBoard();
-
-	cout << "Game Over!" << endl;
-
-	if (game.getWinner() == game.getAIPiece()) cout << "You Lost!" << endl;
-	else if (game.getWinner() == game.getConsolePiece()) cout << "You Won!" << endl;
-	else cout << "It was a Tie!" << endl; 
 
 	return 0;
 }
