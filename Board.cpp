@@ -14,16 +14,16 @@ using namespace std;
 class Board {
 private:
   int width, height;
-  char player1, player2;
+  int player1, player2;
   vector<int> board;
-  char winner;
+  int winner;
   bool gameOver;
 
 
 public:
   bool player1Turn;
 
-  Board(int w, int h, char p1, char p2) 
+  Board(int w, int h, int p1, int p2) 
     : width(w), height(h), player1(p1), player2(p2) {
     winner = -1;
     gameOver = false;
@@ -33,8 +33,6 @@ public:
   }
 
   Board(const Board& b2) {
-    width = b2.width;
-    height = b2.height;
     board = b2.board;
     winner = b2.winner;
     gameOver = b2.gameOver;
@@ -67,9 +65,7 @@ public:
 
   bool isValidMove(int n) const { return (getPiece(n) == 0); }
 
-  char getWinner() const { return winner; }
-
-  void setWinner(char w) { winner = w; }
+  int getWinner() const { return winner; }
 
   virtual bool isGameOver();
 

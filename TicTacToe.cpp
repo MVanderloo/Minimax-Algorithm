@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Board.hpp"
+#include "TicTacToeBoard.hpp"
 #include "Players.hpp"
 
 using namespace std;
@@ -10,7 +10,7 @@ public:
 	bool aiTurn;
 
 	TicTacToe(bool AI_is_X) 
-	 : aiTurn(AI_is_X), computer(AI_is_X ? X : O), human(AI_is_X ? O : X) {}
+	 : aiTurn(AI_is_X), computer(AI_is_X ? 1 : 2), human(AI_is_X ? 2 : 1) {}
 
 	bool isGameOver() { return b.isGameOver(); }
 
@@ -38,16 +38,16 @@ public:
 		}
 	}
 
-	Piece getWinner() { return b.getWinner(); }
+	int getWinner() { return b.getWinner(); }
 
-	Piece getAIPiece() { return computer.getPiece(); }
+	int getAIPiece() { return computer.getPiece(); }
 
-	Piece getConsolePiece() { return human.getPiece(); }
+	int getConsolePiece() { return human.getPiece(); }
 
 private:
 	AIPlayer computer;
 	ConsolePlayer human;
-	Board b;
+	TicTacToeBoard b;
 };
 
 int main() {
@@ -55,7 +55,7 @@ int main() {
 
 	while (true) {
 		cout << "Would you like to be X or O? (X goes first)" << endl;
-		cout << "       [X]        [O]       " << endl;
+		cout << "       [x]        [o]       " << endl;
 
 		char playerPiece;
 		cin >> playerPiece;

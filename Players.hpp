@@ -5,14 +5,14 @@ using namespace std;
 
 class ConsolePlayer {
 private:
-	Piece myPiece;
+	int myPiece;
 
 public:
-	ConsolePlayer(Piece p) : myPiece(p) {}
+	ConsolePlayer(int piece) : myPiece(piece) {}
 
-	Piece getPiece() { return myPiece; }
+	int getPiece() { return myPiece; }
 
-	int getMove(const Board& b) {
+	int getMove(const TicTacToeBoard& b) {
 		b.print();
 		cout << "Where would you like to move?" << endl; // 29 characters
 
@@ -28,10 +28,10 @@ public:
 		return move;
 	}
 
-	vector<int> getValidMoves(const Board& b) {
+	vector<int> getValidMoves(const TicTacToeBoard& b) {
 		vector<int> moves;
 		for (int i = 1; i <= 9; i++) {
-			if (b.getPiece(i) == E) moves.push_back(i);
+			if (b.getPiece(i) == 0) moves.push_back(i);
 		}
 		return moves;
 	}
@@ -39,9 +39,9 @@ public:
 
 class AIPlayer {
 public:
-	AIPlayer(Piece p, int searchDepth = 10) : myPiece(p), searchDepth(searchDepth) {
-		if (myPiece == X) opponent_piece = O;
-		else opponent_piece = X;
+	AIPlayer(int p, int searchDepth = 10) : myPiece(p), searchDepth(searchDepth) {
+		if (myPiece == 1) opponent_piece = 2;
+		else opponent_piece = 1;
 	}
 
 	/**
@@ -52,12 +52,12 @@ public:
 	 * 
 	 * returns the highest scoring move 
 	 */
-	int getMove(const Board& b, bool useABPruning = true) {
+	int getMove(const TicTacToeBoard& b, bool useABPruning = true) {
 		int bestMove = -1;
 		int score, bestScore = INT_MIN;
 
 		for (int move : getUniqueMoves(b)) {
-			Board b2 (b);
+			TicTacToeBoard b2 (b);
 			b2.setPiece(move, myPiece);
 			
 			score = (useABPruning ? minimaxABPruning(b2, searchDepth, INT_MIN, INT_MAX, false) : minimax(b2, searchDepth, false));
@@ -70,10 +70,10 @@ public:
 		return bestMove;
 	}
 
-	Piece getPiece() { return myPiece; }
+	int getPiece() { return myPiece; }
 
 private:
-	Piece myPiece, opponent_piece;
+	int myPiece, opponent_piece;
 	int searchDepth;
 
 	/**
@@ -84,7 +84,7 @@ private:
 	 * static analysis of the board and a method that returns a container
 	 * of the moves it can try (getValidMoves() or getUniqueMoves()) 
 	 */
-	int minimax(Board b, int depth, bool maximizing) {
+	int minimax(TicTacToeBoard b, int depth, bool maximizing) {
 		if (depth == 0 || b.isGameOver()) {
 			return scoreBoard(b);
 		}
@@ -94,7 +94,7 @@ private:
 		if (maximizing) {
 			eval = INT_MIN;
 			for (int move : getUniqueMoves(b)) {
-				Board b2 (b);
+				TicTacToeBoard b2 (b);
 				b2.setPiece(move, myPiece);
 				curEval = minimax(b2, depth - 1, false);
 				eval = max(eval, curEval);
@@ -103,7 +103,7 @@ private:
 		} else { // minimizing
 			eval = INT_MAX;
 			for (int move : getValidMoves(b)) {
-				Board b2 (b);
+				TicTacToeBoard b2 (b);
 				b2.setPiece(move, opponent_piece);
 				curEval = minimax(b2, depth - 1, true);
 				eval = min(eval, curEval);
@@ -116,7 +116,7 @@ private:
 	 * This is an implementation of the minimax algorithm utilizing alpha
 	 * beta pruning for optimization 
 	 */
-	int minimaxABPruning(Board b, int depth, int alpha, int beta, bool maximizing) {
+	int minimaxABPruning(TicTacToeBoard b, int depth, int alpha, int beta, bool maximizing) {
 		if (depth == 0 || b.isGameOver()) {
 			return scoreBoard(b);
 		}
@@ -126,7 +126,7 @@ private:
 		if (maximizing) {
 			eval = INT_MIN;
 			for (int move : getUniqueMoves(b)) {
-				Board b2 (b);
+				TicTacToeBoard b2 (b);
 				b2.setPiece(move, myPiece);
 				curEval = minimaxABPruning(b2, depth - 1, alpha, beta, false);
 				eval = max(eval, curEval);
@@ -137,7 +137,7 @@ private:
 		} else { // minimizing
 			eval = INT_MAX;
 			for (int move : getValidMoves(b)) {
-				Board b2 (b);
+				TicTacToeBoard b2 (b);
 				b2.setPiece(move, opponent_piece);
 				curEval = minimaxABPruning(b2, depth - 1, alpha, beta, true);
 				eval = min(eval, curEval);
@@ -151,10 +151,10 @@ private:
 	/**
 	 * returns a vector of all positions (1-9) that are a valid move i.e. empty
 	 */
-	vector<int> getValidMoves(const Board& b) {
+	vector<int> getValidMoves(const TicTacToeBoard& b) {
 		vector<int> moves;
 		for (int i = 1; i <= 9; i++) {
-			if (b.getPiece(i) == E) moves.push_back(i);
+			if (b.getPiece(i) == 0) moves.push_back(i);
 		}
 		return moves;
 	}
@@ -169,7 +169,7 @@ private:
 	 * 
 	 * returns a vector of all the unique valid moves.
 	 */
-	vector<int> getUniqueMoves(const Board& b) {
+	vector<int> getUniqueMoves(const TicTacToeBoard& b) {
 		bool vertSym = true, horzSym = true;
 		vector<int> moves;
 
@@ -194,8 +194,8 @@ private:
 	/** 
 	 * used by the AIPLayer to get a static analysis of the board
 	 */
-	int scoreBoard(const Board& b) {
-		if (b.getWinner() == Invalid) { // means tie
+	int scoreBoard(const TicTacToeBoard& b) {
+		if (b.getWinner() == -1) { // means tie
 			return 0;
 		} else if (b.getWinner() == myPiece) {
 			return 1;
