@@ -1,15 +1,19 @@
+#include <iostream>
+
+#include "TicTacToeBoard.hpp"
+
 char getPlayerPiece() {
     char playerPiece;
     while (true) {
-        cout << "Would you like to be X or O? (X goes first)" << endl;
-        cout << "       [x]        [o]       " << endl;
+        std::cout << "Would you like to be X or O? (X goes first)" << std::endl;
+        std::cout << "       [x]        [o]       " << std::endl;
 
-        cin >> playerPiece;
+        std::cin >> playerPiece;
 
         if (playerPiece == 'x' || playerPiece == 'X' || playerPiece == 'o' || playerPiece == 'O') {
             break;
         } else {
-            cout << "Error: Invalid Selection, Please Enter Again" << endl;
+            std::cout << "Error: Invalid Selection, Please Enter Again" << std::endl;
         }
     }
     return playerPiece;
@@ -18,22 +22,22 @@ char getPlayerPiece() {
 char getPlayAgain() {
     char playAgain;
     while (true) {
-        cout << "Would you like to play again?" << endl;
-        cout << "        [y]       [n]        " << endl;
+        std::cout << "Would you like to play again?" << std::endl;
+        std::cout << "        [y]       [n]        " << std::endl;
 
-        cin >> playAgain;
+        std::cin >> playAgain;
 
         if (playAgain == 'y' || playAgain == 'Y' || playAgain == 'n' || playAgain == 'N') {
             break;
         } else {
-            cout << "Error: Invalid Selection, Please Enter Again" << endl;
+            std::cout << "Error: Invalid Selection, Please Enter Again" << std::endl;
         }
     }
     return playAgain;
 }
 
 int main() {
-    cout << "\033[2JWelcome to TicTacToe\n" << endl;
+    std::cout << "\033[2JWelcome to TicTacToe\n" << std::endl;
 
     while (true) {
         char playerPiece = getPlayerPiece();
@@ -46,11 +50,11 @@ int main() {
 
         game.printBoard();
 
-        cout << "Game Over!" << endl;
+        std::cout << "Game Over!" << std::endl;
 
-        if (game.getWinner() == game.getAIPiece()) cout << "You Lost!" << endl;
-        else if (game.getWinner() == game.getConsolePiece()) cout << "You Won!" << endl;
-        else cout << "It was a Tie!\n" << endl;
+        if (game.getWinner() == game.getAIPiece()) std::cout << "You Lost!" << std::endl;
+        else if (game.getWinner() == game.getConsolePiece()) std::cout << "You Won!" << std::endl;
+        else std::cout << "It was a Tie!\n" << std::endl;
 
         char playAgain = getPlayAgain();
 
