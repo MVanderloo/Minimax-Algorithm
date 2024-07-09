@@ -1,11 +1,3 @@
-/*
-  for board spaces:
-    -1 is invalid or does not exist
-     0 is empty
-     1 is player 1
-     2 is player 2
-*/
-
 #include <iostream>
 #include <array>
 
@@ -14,20 +6,13 @@ using namespace std;
 class Connect4Board {
 public:
   // default constructor
-  Board() {
+  Connect4Board() {
     boardArr = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     x_turn = true;
     gameOver = false;
     winner = -1;
   }
  
-  // copy constructor
-  Board(const Board& b2) {
-    boardArr = b2.boardArr;
-    x_turn = b2.x_turn;
-    gameOver = b2.gameOver;
-    winner = b2.winner;
-  }
 private:
   array<int, 9> boardArr;
   bool x_turn;
